@@ -1,0 +1,118 @@
+openapi: 3.0.4
+info:
+  title: Online Movie Ticket Management API
+  description: This API is meant to manage movie seating and tickets for customers.
+  version: 0.1.9
+
+paths:
+  /tickets:
+    get:
+      summary: Get ticket information.
+      description: Returns the information about a specific ticket.
+      parameters:
+        - name: ticketId
+          in: query
+          description: The ticket ID of the ticket whose information is being requested.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The ticket's information has successfully been found and returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movieName:
+                    type: string
+                  showingTime:
+                    type: string
+                  seatNumber:
+                    type: string
+                  location:
+                    type: string
+        "404":
+          description: The ticketId is not associated with any registered ticket.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type: string
+
+    post:
+      summary: Generate a new ticket.
+      description: Creates a new ticket after a successful payment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reservationId
+              properties:
+                reservationId:
+                  type: string
+                  description: The ID of a held seat reservation.
+      responses:
+        "201":
+          description: The ticket was successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticketId:
+                    type: string
+        "400":
+          description: The reservationId is not associated with any registered reservation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type: string
+
+  /tickets/{ticketId}:
+    delete:
+      summary: Cancel a ticket.
+      description: Cancels an existing, active ticket which makes it unusable.
+      parameters:
+        - name: ticketId
+          in: path
+          description: The ID of the ticket being cancel.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The ticket was successfully canceled, the money was refunded, and the ticket is not usable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  confirmationMessage:
+                    type: string
+        "400":
+          description: Ticket cannot be canceled.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type: string
+        "404":
+          description: The ticketId is not associated with any registered ticket.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type: string
